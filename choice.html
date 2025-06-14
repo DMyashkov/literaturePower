@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        body.visible {
+            opacity: 1;
+        }
+
+        .book-details {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .book-details.visible {
+            opacity: 1;
+        }
+
+        .book-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 600;
+            color: #fff;
+            position: absolute;
+            top: 2rem;
+            width: 100%;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.05em;
+            z-index: 2;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: white;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-button:hover {
+            opacity: 1;
+        }
+
+        .home-button {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: white;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .home-button:hover {
+            opacity: 1;
+        }
+
+        .dilemma-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            position: relative;
+            padding-top: 5vh;
+        }
+
+        .dilemma-question {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .choices-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: -2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .choice {
+            width: 40vw;
+            height: 40vw;
+            max-width: 600px;
+            max-height: 600px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            position: relative;
+            padding: 3rem;
+        }
+
+        .light-effect {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            mix-blend-mode: screen;
+            filter: blur(150px);
+            pointer-events: none;
+        }
+
+        .choice-left .light-effect {
+            background: radial-gradient(circle, rgba(0, 0, 220, 0.8) 0%, rgba(0, 0, 220, 0) 70%);
+        }
+
+        .choice-right .light-effect {
+            background: radial-gradient(circle, rgba(220, 0, 0, 0.8) 0%, rgba(220, 0, 0, 0) 70%);
+        }
+
+        .choice-text {
+            position: relative;
+            z-index: 2;
+            max-width: 90%;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            line-height: 1.4;
+        }
+
+        .corner-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .corner-light {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            mix-blend-mode: screen;
+            background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%);
+            filter: blur(30px);
+        }
+
+        .corner-light.top-left {
+            top: -300px;
+            left: -300px;
+        }
+
+        .corner-light.top-right {
+            top: -300px;
+            right: -300px;
+        }
+
+        .corner-light.bottom-left {
+            bottom: -300px;
+            left: -300px;
+        }
+
+        .corner-light.bottom-right {
+            bottom: -300px;
+            right: -300px;
+        }
+
+        /* Republic - Blue */
+        .republic-theme .corner-light {
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.6) 0%, rgba(147, 112, 219, 0) 70%);
+        }
+
+        /* Utopia - Purple */
+        .utopia-theme .corner-light {
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.6) 0%, rgba(147, 112, 219, 0) 70%);
+        }
+
+        /* Prince - Red */
+        .prince-theme .corner-light {
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.6) 0%, rgba(147, 112, 219, 0) 70%);
+        }
+
+        .corner-light.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="book-details">
+        <div class="corner-lights">
+            <div class="corner-light top-left"></div>
+            <div class="corner-light top-right"></div>
+            <div class="corner-light bottom-left"></div>
+            <div class="corner-light bottom-right"></div>
+        </div>
+        <a href="#" class="back-button" id="backButton">← Назад</a>
+        <a href="#" class="home-button" id="homeButton">Начало</a>
+        <div class="dilemma-container">
+            <div class="dilemma-question" id="dilemmaQuestion"></div>
+            <div class="choices-container">
+                <div class="choice choice-left" id="choiceA">
+                    <div class="light-effect"></div>
+                    <div class="choice-text" id="choiceAText"></div>
+                </div>
+                <div class="choice choice-right" id="choiceB">
+                    <div class="light-effect"></div>
+                    <div class="choice-text" id="choiceBText"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import philosophicalWorks from './philosophical_works.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const bookDetails = document.querySelector('.book-details');
+            const dilemmaQuestion = document.getElementById('dilemmaQuestion');
+            const choiceAText = document.getElementById('choiceAText');
+            const choiceBText = document.getElementById('choiceBText');
+            const cornerLights = document.querySelectorAll('.corner-light');
+            
+            // Get book title from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const title = urlParams.get('title');
+            
+            if (title && philosophicalWorks[title]) {
+                const work = philosophicalWorks[title];
+                dilemmaQuestion.textContent = work.moralDilemma.question;
+                choiceAText.textContent = work.moralDilemma.choices.a;
+                choiceBText.textContent = work.moralDilemma.choices.b;
+
+                // Add theme class based on book
+                if (title === "The Republic") {
+                    bookDetails.classList.add('utopia-theme');
+                } else if (title === "Utopia") {
+                    bookDetails.classList.add('utopia-theme');
+                } else if (title === "The Prince") {
+                    bookDetails.classList.add('utopia-theme');
+                }
+
+                // Show corner lights
+                cornerLights.forEach(light => {
+                    light.classList.add('visible');
+                });
+
+                // Add fade-out navigation function
+                const navigateWithFade = (url) => {
+                    document.body.style.opacity = '0';
+                    document.body.style.transition = 'opacity 0.5s ease-out';
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 500);
+                };
+
+                // Add click handlers for navigation buttons
+                document.getElementById('backButton').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navigateWithFade('index.html');
+                });
+
+                document.getElementById('homeButton').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navigateWithFade('index.html');
+                });
+
+                // Mouse movement effect
+                const choiceA = document.getElementById('choiceA');
+                const choiceB = document.getElementById('choiceB');
+                const lightEffectA = choiceA.querySelector('.light-effect');
+                const lightEffectB = choiceB.querySelector('.light-effect');
+
+                document.addEventListener('mousemove', (e) => {
+                    const rectA = choiceA.getBoundingClientRect();
+                    const rectB = choiceB.getBoundingClientRect();
+                    
+                    const centerA = {
+                        x: rectA.left + rectA.width / 2,
+                        y: rectA.top + rectA.height / 2
+                    };
+                    
+                    const centerB = {
+                        x: rectB.left + rectB.width / 2,
+                        y: rectB.top + rectB.height / 2
+                    };
+                    
+                    const distanceA = Math.sqrt(
+                        Math.pow(e.clientX - centerA.x, 2) + 
+                        Math.pow(e.clientY - centerA.y, 2)
+                    );
+                    
+                    const distanceB = Math.sqrt(
+                        Math.pow(e.clientX - centerB.x, 2) + 
+                        Math.pow(e.clientY - centerB.y, 2)
+                    );
+                    
+                    const maxDistance = 1500; // Increased for larger area of effect
+                    const intensityA = Math.max(0, Math.pow(1 - distanceA / maxDistance, 1.1)); // Reduced power for more consistent intensity
+                    const intensityB = Math.max(0, Math.pow(1 - distanceB / maxDistance, 1.1));
+                    
+                    lightEffectA.style.opacity = intensityA;
+                    lightEffectB.style.opacity = intensityB;
+                });
+
+                // Add click handlers for choices
+                choiceA.addEventListener('click', () => {
+                    document.body.style.opacity = '0';
+                    setTimeout(() => {
+                        window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=a`;
+                    }, 500);
+                });
+
+                choiceB.addEventListener('click', () => {
+                    document.body.style.opacity = '0';
+                    setTimeout(() => {
+                        window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=b`;
+                    }, 500);
+                });
+
+                // Show the content with a slight delay for the fade effect
+                setTimeout(() => {
+                    bookDetails.classList.add('visible');
+                    document.body.classList.add('visible');
+                }, 100);
+            } else {
+                console.error('Book not found:', title);
+                dilemmaQuestion.textContent = 'Книгата не е намерена';
+            }
+        });
+    </script>
+</body>
+</html> 

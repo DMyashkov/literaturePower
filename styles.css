@@ -1,0 +1,386 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.central-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 600;
+    color: #fff;
+    position: absolute;
+    z-index: 2;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.05em;
+    transform: translateY(0);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    user-select: none;
+}
+
+.central-text.moved {
+    transform: translateY(-40vh);
+    opacity: 0.7;
+}
+
+.realms-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.realms-container.spinning {
+    animation: spin 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-play-state: running;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(720deg); /* Two full rotations */
+    }
+}
+
+.realm {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.realm-content {
+    text-align: center;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+    max-width: 280px;
+}
+
+.realm-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+}
+
+/* Position the realms in a perfect pentagon pattern */
+.realm[data-realm="divine"] {
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.realm[data-realm="rebellion"] {
+    top: 35%;
+    right: 20%;
+}
+
+.realm[data-realm="ideological"] {
+    bottom: 35%;
+    right: 20%;
+}
+
+.realm[data-realm="gender"] {
+    bottom: 35%;
+    left: 20%;
+}
+
+.realm[data-realm="philosophical"] {
+    top: 35%;
+    left: 20%;
+}
+
+.hover-effect {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    mix-blend-mode: screen;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+    filter: blur(30px);
+}
+
+/* Color themes for each realm */
+.realm[data-realm="divine"] .realm-content h2 { color: #FFD700; }
+.realm[data-realm="rebellion"] .realm-content h2 { color: #FF4500; }
+.realm[data-realm="ideological"] .realm-content h2 { color: #4169E1; }
+.realm[data-realm="gender"] .realm-content h2 { color: #FF69B4; }
+.realm[data-realm="philosophical"] .realm-content h2 { color: #9370DB; }
+
+.escape-text {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    opacity: 0;
+    transition: opacity 0.3s ease, color 0.3s ease;
+    z-index: 1000;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.escape-text:hover {
+    color: rgba(255, 255, 255, 1);
+    text-decoration: underline;
+}
+
+.escape-text.visible {
+    opacity: 1;
+}
+
+.timeline-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    z-index: 1100;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-container.visible {
+    opacity: 1;
+}
+
+.timeline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90vw;
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    pointer-events: auto;
+    gap: 8rem;
+    padding-bottom: 2rem;
+}
+
+.timeline::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.timeline-point {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    position: relative;
+}
+
+.timeline-point::after {
+    content: '';
+    position: absolute;
+    bottom: -2rem;
+    width: 1px;
+    height: 1.5rem;
+    background: rgba(255, 255, 255, 0.3);
+    transition: background-color 0.3s ease;
+}
+
+.timeline-point:hover::after,
+.timeline-point.active::after {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.timeline-container.visible .timeline-point {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-point:nth-child(1) { transition-delay: 0.1s; }
+.timeline-point:nth-child(2) { transition-delay: 0.2s; }
+.timeline-point:nth-child(3) { transition-delay: 0.3s; }
+
+.timeline-point .book-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.5em;
+    transition: color 0.2s;
+    text-align: center;
+}
+
+.timeline-point .year {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.2em;
+    text-align: center;
+}
+
+.timeline-point:hover .book-title,
+.timeline-point.active .book-title {
+    color: #FFD700;
+    text-decoration: underline;
+}
+
+.painting-lanes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    z-index: 2000;
+    display: none;
+}
+
+.painting-lanes.visible {
+    opacity: 1;
+    display: block;
+}
+
+.painting-lane {
+    position: absolute;
+    top: 0;
+    width: 18vw;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(90deg, 
+        rgba(45, 0, 90, 0.98) 0%,
+        rgba(60, 0, 120, 0.98) 50%,
+        rgba(45, 0, 90, 0.98) 100%
+    );
+    box-shadow: 
+        inset 0 0 50px rgba(0, 0, 0, 0.5),
+        inset 0 0 100px rgba(0, 0, 0, 0.3);
+    padding: 0 2vw;
+}
+
+.painting-lane::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('assets/wood_texture.jpg');
+    opacity: 0.15;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    filter: grayscale(100%) brightness(1.1) contrast(1.3);
+}
+
+.painting-lane.left {
+    left: -18vw;
+    transition: left 0.5s ease-out;
+}
+
+.painting-lane.right {
+    right: -18vw;
+    transition: right 0.5s ease-out;
+}
+
+.painting-lanes.visible .painting-lane.left {
+    left: 0;
+}
+
+.painting-lanes.visible .painting-lane.right {
+    right: 0;
+}
+
+.painting-scroll {
+    position: absolute;
+    width: calc(100% - 4vw);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: scrollPaintings 30s linear infinite;
+    will-change: transform;
+}
+
+.painting-info {
+    text-align: center;
+    margin-bottom: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'Playfair Display', serif;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    padding: 0 1vw;
+}
+
+.painting-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.painting-artist {
+    font-size: 0.8rem;
+    font-style: italic;
+    margin-bottom: 0.1rem;
+}
+
+.painting-year {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.painting-image {
+    width: 100%;
+    height: auto;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes scrollPaintings {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(calc(-100% + 100vh));
+    }
+} 
