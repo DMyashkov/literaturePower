@@ -20,6 +20,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    transform: translateY(0vh);
 }
 
 .central-text {
@@ -100,17 +101,17 @@ body {
     transform: translateX(-50%);
 }
 
-.realm[data-realm="rebellion"] {
+.realm[data-realm="downfall"] {
     top: 35%;
     right: 20%;
 }
 
-.realm[data-realm="ideological"] {
+.realm[data-realm="control"] {
     bottom: 35%;
     right: 20%;
 }
 
-.realm[data-realm="gender"] {
+.realm[data-realm="race"] {
     bottom: 35%;
     left: 20%;
 }
@@ -135,9 +136,9 @@ body {
 
 /* Color themes for each realm */
 .realm[data-realm="divine"] .realm-content h2 { color: #FFD700; }
-.realm[data-realm="rebellion"] .realm-content h2 { color: #FF4500; }
-.realm[data-realm="ideological"] .realm-content h2 { color: #4169E1; }
-.realm[data-realm="gender"] .realm-content h2 { color: #FF69B4; }
+.realm[data-realm="downfall"] .realm-content h2 { color: #FF4500; }
+.realm[data-realm="control"] .realm-content h2 { color: #4169E1; }
+.realm[data-realm="race"] .realm-content h2 { color: #FFA500; }
 .realm[data-realm="philosophical"] .realm-content h2 { color: #9370DB; }
 
 .escape-text {
@@ -175,11 +176,15 @@ body {
     justify-content: center;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    visibility: hidden;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, visibility;
 }
 
 .timeline-container.visible {
     opacity: 1;
+    visibility: visible;
 }
 
 .timeline {
@@ -193,6 +198,41 @@ body {
     pointer-events: auto;
     gap: 8rem;
     padding-bottom: 2rem;
+    will-change: transform;
+}
+
+/* Timeline transitions for all themes (3 elements) */
+#philosophical-timeline .timeline-point:nth-child(1),
+#downfall-timeline .timeline-point:nth-child(1),
+#control-timeline .timeline-point:nth-child(1),
+#divine-timeline .timeline-point:nth-child(1),
+#race-timeline .timeline-point:nth-child(1) {
+    transition-delay: 0.1s;
+}
+
+#philosophical-timeline .timeline-point:nth-child(2),
+#downfall-timeline .timeline-point:nth-child(2),
+#control-timeline .timeline-point:nth-child(2),
+#divine-timeline .timeline-point:nth-child(2),
+#race-timeline .timeline-point:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+#philosophical-timeline .timeline-point:nth-child(3),
+#downfall-timeline .timeline-point:nth-child(3),
+#control-timeline .timeline-point:nth-child(3),
+#divine-timeline .timeline-point:nth-child(3),
+#race-timeline .timeline-point:nth-child(3) {
+    transition-delay: 0.3s;
+}
+
+/* Adjust gap for all timelines to match visual spacing */
+#philosophical-timeline,
+#downfall-timeline,
+#control-timeline,
+#divine-timeline,
+#race-timeline {
+    gap: 12rem;
 }
 
 .timeline::after {
@@ -211,10 +251,11 @@ body {
     align-items: center;
     cursor: pointer;
     pointer-events: auto;
-    transition: all 0.3s ease;
     opacity: 0;
     transform: translateY(20px);
     position: relative;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
 }
 
 .timeline-point::after {
@@ -236,10 +277,6 @@ body {
     opacity: 1;
     transform: translateY(0);
 }
-
-.timeline-point:nth-child(1) { transition-delay: 0.1s; }
-.timeline-point:nth-child(2) { transition-delay: 0.2s; }
-.timeline-point:nth-child(3) { transition-delay: 0.3s; }
 
 .timeline-point .book-title {
     font-family: 'Playfair Display', serif;

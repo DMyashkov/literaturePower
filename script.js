@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Color mapping for each realm
     const realmColors = {
         divine: '#FFD700',
-        rebellion: '#FF4500',
-        ideological: '#4169E1',
-        gender: '#FF69B4',
+        downfall: '#FF4500',
+        control: '#4169E1',
+        race: '#FFA500',
         philosophical: '#9370DB'
     };
 
@@ -116,10 +116,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide escape text
         document.querySelector('.escape-text').classList.remove('visible');
         
-        // Hide timeline
-        const timelineContainer = document.querySelector('.timeline-container');
-        timelineContainer.style.display = 'none';
-        timelineContainer.classList.remove('visible');
+        // Hide all timelines with smooth transition
+        const timelineContainers = document.querySelectorAll('.timeline-container');
+        
+        // Remove visible class first to trigger fade out
+        timelineContainers.forEach(container => {
+            container.classList.remove('visible');
+        });
+        
+        // Wait for fade out animation to complete before hiding
+        setTimeout(() => {
+            timelineContainers.forEach(container => {
+                container.style.display = 'none';
+            });
+        }, 500); // Match the transition duration
         
         // Hide painting lanes
         document.querySelector('.painting-lanes').classList.remove('visible');
@@ -180,11 +190,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add emoji mapping for each theme
     const themeEmojis = {
-        'divine': ['👑', '💎', '⚜️', '🎭', '🏛️'], // Divine and Monarchic Power
-        'rebellion': ['⚔️', '🔥', '🛡️', '⚡', '🌪️'], // Rebellion and Moral Struggles
-        'ideological': ['👁️', '📜', '🔍', '🎭', '⚖️'], // Ideological Control and Surveillance
-        'gender': ['⚧', '💫', '🦋', '🌺', '✨'], // Gender and Body Politics
-        'philosophical': ['🔮', '📚', '💭', '🌌', '⚛️']  // Philosophical and Utopian Order
+        'divine': ['👑', '✨', '⚜️', '🌟', '🏛️'], // Divine and Fateful Power
+        'race': ['👨', '👩', '👨🏿', '👩🏿', '🌍'], // Power of Whites over Blacks
+        'downfall': ['😔', '💔', '🌑', '🌪️', '⚡'], // Power as Personal Downfall
+        'philosophical': ['🔮', '💭', '📜', '⚖️', '🎭'], // Philosophical and Utopian Visions
+        'control': ['👁️', '🔍', '📜', '🎭', '⚖️']  // Power as Social and Absolute Control
     };
 
     function createEmojiRain(realmType) {
@@ -259,7 +269,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const timelineContainer = document.querySelector('.timeline-container');
             const paintingLanes = document.querySelector('.painting-lanes');
             
-            if (realmType === 'philosophical') {
+            if (realmType === 'philosophical' || realmType === 'downfall' || 
+                realmType === 'control' || realmType === 'divine' || realmType === 'race') {
                 timelineContainer.style.display = 'flex';
                 // Wait for the power to top animation to reach 15%
                 const checkPowerPosition = () => {
@@ -270,8 +281,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     const progress = Math.abs(translateY) / (window.innerHeight * 0.4); // 40vh is the total movement
                     
                     if (progress >= 0.15) {
-                        timelineContainer.classList.add('visible');
-                        paintingLanes.classList.add('visible');
+                        // Show the appropriate timeline
+                        const philosophicalTimeline = document.getElementById('philosophical-timeline');
+                        const downfallTimeline = document.getElementById('downfall-timeline');
+                        const controlTimeline = document.getElementById('control-timeline');
+                        const divineTimeline = document.getElementById('divine-timeline');
+                        const raceTimeline = document.getElementById('race-timeline');
+                        
+                        // Hide all timelines first
+                        philosophicalTimeline.parentElement.style.display = 'none';
+                        downfallTimeline.parentElement.style.display = 'none';
+                        controlTimeline.parentElement.style.display = 'none';
+                        divineTimeline.parentElement.style.display = 'none';
+                        raceTimeline.parentElement.style.display = 'none';
+                        
+                        // Show the appropriate timeline with the same animation
+                        const targetTimeline = {
+                            'philosophical': philosophicalTimeline,
+                            'downfall': downfallTimeline,
+                            'control': controlTimeline,
+                            'divine': divineTimeline,
+                            'race': raceTimeline
+                        }[realmType];
+                        
+                        if (targetTimeline) {
+                            targetTimeline.parentElement.style.display = 'flex';
+                            // Force reflow to ensure transition works
+                            targetTimeline.parentElement.offsetHeight;
+                            targetTimeline.parentElement.classList.add('visible');
+                        }
+                        
+                        if (ENABLE_PAINTING_LANES) {
+                            paintingLanes.classList.add('visible');
+                        }
                     } else {
                         requestAnimationFrame(checkPowerPosition);
                     }
@@ -446,14 +488,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookTitles = document.querySelectorAll('.book-title');
     bookTitles.forEach(title => {
         title.addEventListener('click', () => {
-            // Add fade-out effect to the current page
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.5s ease-out';
+            // Get the book title from the data attribute
+            const bookTitle = title.closest('.timeline-point').getAttribute('data-book');
+            // Map the data attribute to the actual book title
+            const titleMap = {
+                'utopia': 'Утопия',
+                'city-of-sun': 'Градът на слънцето',
+                'social-contract': 'Обществения договор',
+                'macbeth': 'Макбет',
+                'faust': 'Фауст',
+                'tobacco': 'Тютюн',
+                '1984': '1984',
+                'handmaid': 'Разказът на прислужницата',
+                'flies': 'Повелителят на мухите',
+                'antigone': 'Антигона',
+                'job': 'Книга на Йов',
+                'odyssey': 'Одисея',
+                'mockingbird': 'Да убиеш присмехулник',
+                'promised': 'Обетована земя',
+                'beloved': 'Beloved'
+            };
+            const actualTitle = titleMap[bookTitle];
             
-            // Navigate to the book page after the fade-out
-            setTimeout(() => {
-                window.location.href = `choice.html?title=${encodeURIComponent(title.textContent.trim())}`;
-            }, 500);
+            if (actualTitle) {
+                // Add fade-out effect to the current page
+                document.body.style.opacity = '0';
+                document.body.style.transition = 'opacity 0.5s ease-out';
+                
+                // Navigate to the book page after the fade-out
+                setTimeout(() => {
+                    window.location.href = `choice.html?title=${encodeURIComponent(actualTitle)}`;
+                }, 500);
+            }
         });
     });
 
@@ -465,7 +531,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show timeline and painting lanes when clicking the button
     document.querySelector('.show-timeline').addEventListener('click', () => {
         isTimelineVisible = true;
-        timeline.classList.add('visible');
+        const selectedRealm = document.querySelector('.realm.active');
+        if (selectedRealm) {
+            const realmType = selectedRealm.getAttribute('data-realm');
+            const philosophicalTimeline = document.getElementById('philosophical-timeline');
+            const downfallTimeline = document.getElementById('downfall-timeline');
+            
+            // Hide all timelines first
+            philosophicalTimeline.parentElement.style.display = 'none';
+            downfallTimeline.parentElement.style.display = 'none';
+            
+            // Show the appropriate timeline
+            if (realmType === 'philosophical') {
+                philosophicalTimeline.parentElement.style.display = 'block';
+                philosophicalTimeline.parentElement.classList.add('visible');
+            } else if (realmType === 'downfall') {
+                downfallTimeline.parentElement.style.display = 'block';
+                downfallTimeline.parentElement.classList.add('visible');
+            }
+        }
+        
         if (ENABLE_PAINTING_LANES) {
             paintingLanes.style.display = 'block';
             paintingLanes.classList.add('visible');
@@ -474,9 +559,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Hide timeline and painting lanes when clicking outside
     document.addEventListener('click', (e) => {
-        if (isTimelineVisible && !timeline.contains(e.target) && !e.target.classList.contains('show-timeline')) {
+        if (isTimelineVisible && !e.target.closest('.timeline') && !e.target.classList.contains('show-timeline')) {
             isTimelineVisible = false;
-            timeline.classList.remove('visible');
+            document.querySelectorAll('.timeline-container').forEach(container => {
+                container.classList.remove('visible');
+            });
             if (ENABLE_PAINTING_LANES) {
                 paintingLanes.classList.remove('visible');
                 setTimeout(() => {
@@ -490,7 +577,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && isTimelineVisible) {
             isTimelineVisible = false;
-            timeline.classList.remove('visible');
+            document.querySelectorAll('.timeline-container').forEach(container => {
+                container.classList.remove('visible');
+            });
             if (ENABLE_PAINTING_LANES) {
                 paintingLanes.classList.remove('visible');
                 setTimeout(() => {

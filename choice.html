@@ -117,7 +117,7 @@
             display: flex;
             justify-content: center;
             gap: 2rem;
-            margin-top: -2rem;
+            margin-top: 2rem;
             position: relative;
             z-index: 2;
         }
@@ -227,8 +227,34 @@
             background: radial-gradient(circle, rgba(147, 112, 219, 0.6) 0%, rgba(147, 112, 219, 0) 70%);
         }
 
+        /* Downfall - Dark Red */
+        .downfall-theme .corner-light {
+            background: radial-gradient(circle, rgba(255,69,0,0.6) 0%, rgba(255,69,0,0) 70%);
+        }
+
+        /* Theme colors for corner lights */
+        .философски-и-утопични-визии-за-властта-theme .corner-light {
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.45) 0%, rgba(147, 112, 219, 0) 70%);
+        }
+
+        .властта-като-лично-падение-theme .corner-light {
+            background: radial-gradient(circle, rgba(255, 69, 0, 0.45) 0%, rgba(255, 69, 0, 0) 70%);
+        }
+
+        .властта-като-социален-и-абсолютен-контрол-theme .corner-light {
+            background: radial-gradient(circle, rgba(65, 105, 225, 0.45) 0%, rgba(65, 105, 225, 0) 70%);
+        }
+
+        .божествена-и-съдбовна-власт-theme .corner-light {
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.45) 0%, rgba(255, 215, 0, 0) 70%);
+        }
+
+        .властта-на-белите-над-черните-theme .corner-light {
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.45) 0%, rgba(255, 165, 0, 0) 70%);
+        }
+
         .corner-light.visible {
-            opacity: 1;
+            opacity: 0.7;
         }
     </style>
 </head>
@@ -271,106 +297,142 @@
             const urlParams = new URLSearchParams(window.location.search);
             const title = urlParams.get('title');
             
-            if (title && philosophicalWorks[title]) {
-                const work = philosophicalWorks[title];
-                dilemmaQuestion.textContent = work.moralDilemma.question;
-                choiceAText.textContent = work.moralDilemma.choices.a;
-                choiceBText.textContent = work.moralDilemma.choices.b;
-
-                // Add theme class based on book
-                if (title === "The Republic") {
-                    bookDetails.classList.add('utopia-theme');
-                } else if (title === "Utopia") {
-                    bookDetails.classList.add('utopia-theme');
-                } else if (title === "The Prince") {
-                    bookDetails.classList.add('utopia-theme');
+            if (title) {
+                // Get the work from all possible realms
+                const realms = [
+                    "Философски и утопични визии за властта",
+                    "Властта като лично падение",
+                    "Властта като социален и абсолютен контрол",
+                    "Божествена и съдбовна власт",
+                    "Властта на белите над черните"
+                ];
+                
+                let work = null;
+                let realm = null;
+                
+                for (const realmName of realms) {
+                    if (philosophicalWorks[realmName] && philosophicalWorks[realmName][title]) {
+                        work = philosophicalWorks[realmName][title];
+                        realm = realmName;
+                        break;
+                    }
                 }
+                
+                if (work) {
+                    dilemmaQuestion.textContent = work.moralDilemma.question;
+                    choiceAText.textContent = work.moralDilemma.choices.a;
+                    choiceBText.textContent = work.moralDilemma.choices.b;
 
-                // Show corner lights
-                cornerLights.forEach(light => {
-                    light.classList.add('visible');
-                });
+                    // Add theme class based on realm
+                    bookDetails.classList.add(`${realm.toLowerCase().replace(/\s+/g, '-')}-theme`);
 
-                // Add fade-out navigation function
-                const navigateWithFade = (url) => {
-                    document.body.style.opacity = '0';
-                    document.body.style.transition = 'opacity 0.5s ease-out';
-                    setTimeout(() => {
-                        window.location.href = url;
-                    }, 500);
-                };
+                    // Show corner lights
+                    cornerLights.forEach(light => {
+                        light.classList.add('visible');
+                    });
 
-                // Add click handlers for navigation buttons
-                document.getElementById('backButton').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    navigateWithFade('index.html');
-                });
-
-                document.getElementById('homeButton').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    navigateWithFade('index.html');
-                });
-
-                // Mouse movement effect
-                const choiceA = document.getElementById('choiceA');
-                const choiceB = document.getElementById('choiceB');
-                const lightEffectA = choiceA.querySelector('.light-effect');
-                const lightEffectB = choiceB.querySelector('.light-effect');
-
-                document.addEventListener('mousemove', (e) => {
-                    const rectA = choiceA.getBoundingClientRect();
-                    const rectB = choiceB.getBoundingClientRect();
-                    
-                    const centerA = {
-                        x: rectA.left + rectA.width / 2,
-                        y: rectA.top + rectA.height / 2
+                    // Add fade-out navigation function
+                    const navigateWithFade = (url) => {
+                        document.body.style.opacity = '0';
+                        document.body.style.transition = 'opacity 0.5s ease-out';
+                        setTimeout(() => {
+                            window.location.href = url;
+                        }, 500);
                     };
-                    
-                    const centerB = {
-                        x: rectB.left + rectB.width / 2,
-                        y: rectB.top + rectB.height / 2
-                    };
-                    
-                    const distanceA = Math.sqrt(
-                        Math.pow(e.clientX - centerA.x, 2) + 
-                        Math.pow(e.clientY - centerA.y, 2)
-                    );
-                    
-                    const distanceB = Math.sqrt(
-                        Math.pow(e.clientX - centerB.x, 2) + 
-                        Math.pow(e.clientY - centerB.y, 2)
-                    );
-                    
-                    const maxDistance = 1500; // Increased for larger area of effect
-                    const intensityA = Math.max(0, Math.pow(1 - distanceA / maxDistance, 1.1)); // Reduced power for more consistent intensity
-                    const intensityB = Math.max(0, Math.pow(1 - distanceB / maxDistance, 1.1));
-                    
-                    lightEffectA.style.opacity = intensityA;
-                    lightEffectB.style.opacity = intensityB;
-                });
 
-                // Add click handlers for choices
-                choiceA.addEventListener('click', () => {
-                    document.body.style.opacity = '0';
+                    // Add click handlers for navigation buttons
+                    const backButton = document.getElementById('backButton');
+                    const homeButton = document.getElementById('homeButton');
+
+                    if (backButton) {
+                        backButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            navigateWithFade('index.html');
+                        });
+                    }
+
+                    if (homeButton) {
+                        homeButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            navigateWithFade('index.html');
+                        });
+                    }
+
+                    // Add escape key handler
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') {
+                            navigateWithFade('index.html');
+                        }
+                    });
+
+                    // Add click handlers for choices
+                    const choiceA = document.getElementById('choiceA');
+                    const choiceB = document.getElementById('choiceB');
+                    const lightEffectA = choiceA.querySelector('.light-effect');
+                    const lightEffectB = choiceB.querySelector('.light-effect');
+
+                    // Mouse movement effect for light aura
+                    document.addEventListener('mousemove', (e) => {
+                        const rectA = choiceA.getBoundingClientRect();
+                        const rectB = choiceB.getBoundingClientRect();
+                        
+                        const centerA = {
+                            x: rectA.left + rectA.width / 2,
+                            y: rectA.top + rectA.height / 2
+                        };
+                        
+                        const centerB = {
+                            x: rectB.left + rectB.width / 2,
+                            y: rectB.top + rectB.height / 2
+                        };
+                        
+                        const distanceA = Math.sqrt(
+                            Math.pow(e.clientX - centerA.x, 2) + 
+                            Math.pow(e.clientY - centerA.y, 2)
+                        );
+                        
+                        const distanceB = Math.sqrt(
+                            Math.pow(e.clientX - centerB.x, 2) + 
+                            Math.pow(e.clientY - centerB.y, 2)
+                        );
+                        
+                        const maxDistance = 1500; // Increased for larger area of effect
+                        const intensityA = Math.max(0, Math.pow(1 - distanceA / maxDistance, 1.1)); // Reduced power for more consistent intensity
+                        const intensityB = Math.max(0, Math.pow(1 - distanceB / maxDistance, 1.1));
+                        
+                        lightEffectA.style.opacity = intensityA;
+                        lightEffectB.style.opacity = intensityB;
+                    });
+
+                    if (choiceA) {
+                        choiceA.addEventListener('click', () => {
+                            document.body.style.opacity = '0';
+                            setTimeout(() => {
+                                window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=a`;
+                            }, 500);
+                        });
+                    }
+
+                    if (choiceB) {
+                        choiceB.addEventListener('click', () => {
+                            document.body.style.opacity = '0';
+                            setTimeout(() => {
+                                window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=b`;
+                            }, 500);
+                        });
+                    }
+
+                    // Show the content with a slight delay for the fade effect
                     setTimeout(() => {
-                        window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=a`;
-                    }, 500);
-                });
-
-                choiceB.addEventListener('click', () => {
-                    document.body.style.opacity = '0';
-                    setTimeout(() => {
-                        window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=b`;
-                    }, 500);
-                });
-
-                // Show the content with a slight delay for the fade effect
-                setTimeout(() => {
-                    bookDetails.classList.add('visible');
-                    document.body.classList.add('visible');
-                }, 100);
+                        bookDetails.classList.add('visible');
+                        document.body.classList.add('visible');
+                    }, 100);
+                } else {
+                    console.error('Book not found:', title);
+                    dilemmaQuestion.textContent = 'Книгата не е намерена';
+                }
             } else {
-                console.error('Book not found:', title);
+                console.error('Book title not provided');
                 dilemmaQuestion.textContent = 'Книгата не е намерена';
             }
         });

@@ -17,6 +17,7 @@
             min-height: 100vh;
             opacity: 0;
             transition: opacity 0.5s ease-out;
+            position: relative;
         }
 
         body.visible {
@@ -33,11 +34,23 @@
             padding: 1rem;
             opacity: 0;
             transition: opacity 0.5s ease-out;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100%;
         }
 
         .book-container.visible {
             opacity: 1;
+        }
+
+        .corner-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
 
         .back-button {
@@ -50,11 +63,7 @@
             font-size: 1rem;
             opacity: 0.7;
             transition: opacity 0.3s ease;
-            z-index: 10;
-        }
-
-        .back-button:hover {
-            opacity: 1;
+            z-index: 100;
         }
 
         .home-button {
@@ -67,11 +76,7 @@
             font-size: 1rem;
             opacity: 0.7;
             transition: opacity 0.3s ease;
-            z-index: 10;
-        }
-
-        .home-button:hover {
-            opacity: 1;
+            z-index: 100;
         }
 
         .book-header {
@@ -79,14 +84,15 @@
             text-align: center;
             margin-bottom: 2rem;
             position: relative;
+            z-index: 2;
         }
 
         .book-title {
             font-family: 'Playfair Display', serif;
-            font-size: 5rem;
+            font-size: 4rem;
             font-weight: 700;
             text-align: center;
-            margin: 1.5rem 0 0.5rem;
+            margin: 1.5rem 0 2rem;
             position: relative;
             z-index: 2;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
@@ -151,6 +157,7 @@
             position: relative;
             z-index: 2;
             padding: 0 2rem;
+            margin-bottom: 2rem;
         }
 
         .left-section, .right-section {
@@ -208,12 +215,27 @@
             position: relative;
             flex: 1;
             transition: all 0.3s ease;
+            overflow-y: auto;
+            max-height: 400px;
+            padding-right: 1rem;
         }
 
-        .section:hover .section-content,
-        .section.focused .section-content {
-            opacity: 1;
-            transform: translateY(0);
+        .section-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .section-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .section-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .section-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .section-title {
@@ -295,16 +317,6 @@
             opacity: 0;
         }
 
-        .corner-lights {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
         .corner-light {
             position: absolute;
             width: 800px;
@@ -314,8 +326,29 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             mix-blend-mode: screen;
-            background: radial-gradient(circle, rgba(147, 112, 219, 0.6) 0%, rgba(147, 112, 219, 0) 70%);
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.45) 0%, rgba(147, 112, 219, 0) 70%);
             filter: blur(40px);
+        }
+
+        /* Theme colors for corner lights */
+        .философски-и-утопични-визии-за-властта-theme .corner-light {
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.45) 0%, rgba(147, 112, 219, 0) 70%);
+        }
+
+        .властта-като-лично-падение-theme .corner-light {
+            background: radial-gradient(circle, rgba(255, 69, 0, 0.45) 0%, rgba(255, 69, 0, 0) 70%);
+        }
+
+        .властта-като-социален-и-абсолютен-контрол-theme .corner-light {
+            background: radial-gradient(circle, rgba(65, 105, 225, 0.45) 0%, rgba(65, 105, 225, 0) 70%);
+        }
+
+        .божествена-и-съдбовна-власт-theme .corner-light {
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.45) 0%, rgba(255, 215, 0, 0) 70%);
+        }
+
+        .властта-на-белите-над-черните-theme .corner-light {
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.45) 0%, rgba(255, 165, 0, 0) 70%);
         }
 
         .corner-light.top-left {
@@ -339,7 +372,7 @@
         }
 
         .corner-light.visible {
-            opacity: 1;
+            opacity: 0.7;
         }
 
         .particles-container {
@@ -420,6 +453,7 @@
         @media (max-width: 1024px) {
             .content-sections {
                 grid-template-columns: 1fr;
+                padding: 0 1rem;
             }
 
             .book-title {
@@ -428,6 +462,10 @@
 
             .key-quote {
                 font-size: 1.6rem;
+            }
+
+            .section-content {
+                max-height: 300px;
             }
         }
 
@@ -446,6 +484,11 @@
 
             .section-content {
                 font-size: 1.1rem;
+                max-height: 250px;
+            }
+
+            .content-sections {
+                padding: 0 0.5rem;
             }
         }
     </style>
@@ -560,86 +603,198 @@
             
             // Map English titles to Bulgarian
             const titleMap = {
-                "The Republic": "Държавата",
-                "Utopia": "Утопия",
-                "The Prince": "Владетел"
+                "Утопия": "Утопия",
+                "Градът на слънцето": "Градът на слънцето",
+                "Общественият договор": "Общественият договор",
+                "Макбет": "Макбет",
+                "Фауст": "Фауст",
+                "Тютюн": "Тютюн",
+                "1984": "1984",
+                "Разказът на прислужницата": "Разказът на прислужницата",
+                "Повелителят на мухите": "Повелителят на мухите",
+                "Антигона": "Антигона",
+                "Книга на Йов": "Книга на Йов",
+                "Одисея": "Одисея",
+                "Да убиеш присмехулник": "Да убиеш присмехулник",
+                "Обетована земя": "Обетована земя",
+                "Beloved": "Beloved"
             };
 
             // Book metadata
             const bookMetadata = {
-                "The Republic": {
-                    author: "Платон",
-                    year: "380 пр.н.е.",
-                    period: "Античност"
-                },
-                "Utopia": {
+                "Утопия": {
                     author: "Томас Мор",
                     year: "1516",
                     period: "Ренесанс"
                 },
-                "The Prince": {
-                    author: "Макиавели",
-                    year: "1532",
+                "Градът на слънцето": {
+                    author: "Томазо Кампанела",
+                    year: "1602",
                     period: "Ренесанс"
+                },
+                "Общественият договор": {
+                    author: "Жан-Жак Русо",
+                    year: "1762",
+                    period: "Просвещение"
+                },
+                "Макбет": {
+                    author: "Уилям Шекспир",
+                    year: "1606",
+                    period: "Ренесанс"
+                },
+                "Фауст": {
+                    author: "Йохан Волфганг фон Гьоте",
+                    year: "1808",
+                    period: "Романтизъм"
+                },
+                "Тютюн": {
+                    author: "Димитър Димов",
+                    year: "1951",
+                    period: "Съвременност"
+                },
+                "1984": {
+                    author: "Джордж Оруел",
+                    year: "1949",
+                    period: "Съвременност"
+                },
+                "Разказът на прислужницата": {
+                    author: "Маргарет Атууд",
+                    year: "1985",
+                    period: "Съвременност"
+                },
+                "Повелителят на мухите": {
+                    author: "Уилям Голдинг",
+                    year: "1954",
+                    period: "Съвременност"
+                },
+                "Антигона": {
+                    author: "Софокъл",
+                    year: "441 пр.н.е.",
+                    period: "Античност"
+                },
+                "Книга на Йов": {
+                    author: "Библия",
+                    year: "600 пр.н.е.",
+                    period: "Античност"
+                },
+                "Одисея": {
+                    author: "Омир",
+                    year: "800 пр.н.е.",
+                    period: "Античност"
+                },
+                "Да убиеш присмехулник": {
+                    author: "Харпър Ли",
+                    year: "1960",
+                    period: "Съвременност"
+                },
+                "Обетована земя": {
+                    author: "Джеймс Болдуин",
+                    year: "1974",
+                    period: "Съвременност"
+                },
+                "Beloved": {
+                    author: "Тони Морисън",
+                    year: "1987",
+                    period: "Съвременност"
                 }
             };
 
             // Key quotes for each book
             const keyQuotes = {
-                "The Republic": "Добродетелта е знание, а порокът е невежеството.",
-                "Utopia": "Истинската свобода е в съзнанието, че нищо не е наше.",
-                "The Prince": "По-добре да те се боят, отколкото да те обичат."
+                "Утопия": "Истинската свобода е в съзнанието, че нищо не е наше.",
+                "Градът на слънцето": "Знанието е светлината, която води към перфектното общество.",
+                "Общественият договор": "Човекът се ражда свободен, но навсякъде е в окови.",
+                "Макбет": "Амбицията е най-големият враг на човека.",
+                "Фауст": "Знанието без мъдрост е най-голямата опасност.",
+                "Тютюн": "Парите корумпират душата по-бързо от всичко друго.",
+                "1984": "Който контролира миналото, контролира бъдещето.",
+                "Разказът на прислужницата": "В името на Бога, ние ще превърнем жените в инкубатори.",
+                "Повелителят на мухите": "Човекът е по природа зъл, а цивилизацията е само тънък слой.",
+                "Антигона": "Божествените закони са по-важни от човешките.",
+                "Книга на Йов": "Господ дава, Господ взима.",
+                "Одисея": "Човекът трябва да се бори със съдбата си.",
+                "Да убиеш присмехулник": "Никога не можеш да разбереш човек, докато не се поставиш в неговите обувки.",
+                "Обетована земя": "Идентичността е борба между миналото и бъдещето.",
+                "Beloved": "Миналото никога не умира, то дори не е минало."
             };
             
-            if (title && philosophicalWorks[title] && choice) {
-                const work = philosophicalWorks[title];
-                const metadata = bookMetadata[title];
+            if (title) {
+                // Get the work from all possible realms
+                const realms = [
+                    "Философски и утопични визии за властта",
+                    "Властта като лично падение",
+                    "Властта като социален и абсолютен контрол",
+                    "Божествена и съдбовна власт",
+                    "Властта на белите над черните"
+                ];
                 
-                bookTitle.textContent = titleMap[title] || title;
-                bookAuthor.textContent = metadata.author;
-                bookYear.textContent = metadata.year;
-                bookPeriod.textContent = metadata.period;
-                keyQuote.textContent = keyQuotes[title];
-                bookEssence.textContent = work.description;
-                choiceMeaning.textContent = work.moralDilemma.whatItSaysAboutYou[choice];
-                powerSignificance.textContent = work.powerSignificance || "Значението на властта в тази творба...";
-                historicalContext.textContent = work.historicalContext || "Историческият контекст на творбата...";
-
-                // Get button references
-                const backButton = document.getElementById('backButton');
-                const homeButton = document.getElementById('homeButton');
-
-                // Add click handlers for navigation buttons
-                if (backButton) {
-                    backButton.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        document.body.style.opacity = '0';
-                        setTimeout(() => {
-                            window.location.href = `choice.html?title=${encodeURIComponent(title)}`;
-                        }, 500);
-                    });
+                let work = null;
+                let realm = null;
+                
+                for (const realmName of realms) {
+                    if (philosophicalWorks[realmName] && philosophicalWorks[realmName][title]) {
+                        work = philosophicalWorks[realmName][title];
+                        realm = realmName;
+                        break;
+                    }
                 }
+                
+                if (work && choice) {
+                    const metadata = bookMetadata[title];
+                    
+                    bookTitle.textContent = titleMap[title] || title;
+                    bookAuthor.textContent = metadata.author;
+                    bookYear.textContent = metadata.year;
+                    bookPeriod.textContent = metadata.period;
+                    keyQuote.textContent = keyQuotes[title];
+                    bookEssence.textContent = work.summary;
+                    choiceMeaning.textContent = work.moralDilemma.whatItSaysAboutYou[choice];
+                    powerSignificance.textContent = work.powerExploration;
+                    historicalContext.textContent = work.historicalContext;
 
-                if (homeButton) {
-                    homeButton.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        document.body.style.opacity = '0';
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 500);
-                    });
+                    // Add theme class based on realm
+                    bookContainer.classList.add(`${realm.toLowerCase().replace(/\s+/g, '-')}-theme`);
+
+                    // Get button references
+                    const backButton = document.getElementById('backButton');
+                    const homeButton = document.getElementById('homeButton');
+
+                    // Add click handlers for navigation buttons
+                    if (backButton) {
+                        backButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            document.body.style.opacity = '0';
+                            setTimeout(() => {
+                                window.location.href = `choice.html?title=${encodeURIComponent(title)}`;
+                            }, 500);
+                        });
+                    }
+
+                    if (homeButton) {
+                        homeButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            document.body.style.opacity = '0';
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 500);
+                        });
+                    }
+
+                    // Show the content with a slight delay for the fade effect
+                    setTimeout(() => {
+                        document.body.classList.add('visible');
+                        bookContainer.classList.add('visible');
+                        cornerLights.forEach(light => {
+                            light.classList.add('visible');
+                        });
+                    }, 100);
+                } else {
+                    console.error('Book or choice not found:', title, choice);
+                    bookTitle.textContent = 'Грешка';
+                    keyQuote.textContent = 'Нещо се обърка';
                 }
-
-                // Show the content with a slight delay for the fade effect
-                setTimeout(() => {
-                    document.body.classList.add('visible');
-                    bookContainer.classList.add('visible');
-                    cornerLights.forEach(light => {
-                        light.classList.add('visible');
-                    });
-                }, 100);
             } else {
-                console.error('Book or choice not found:', title, choice);
+                console.error('Book title not found:', title);
                 bookTitle.textContent = 'Грешка';
                 keyQuote.textContent = 'Нещо се обърка';
             }
