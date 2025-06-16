@@ -116,20 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide escape text
         document.querySelector('.escape-text').classList.remove('visible');
         
-        // Hide all timelines with smooth transition
-        const timelineContainers = document.querySelectorAll('.timeline-container');
-        
-        // Remove visible class first to trigger fade out
-        timelineContainers.forEach(container => {
+        // Hide all timeline containers and their contents
+        document.querySelectorAll('.timeline-container').forEach(container => {
             container.classList.remove('visible');
+            container.style.display = 'none';
         });
-        
-        // Wait for fade out animation to complete before hiding
-        setTimeout(() => {
-            timelineContainers.forEach(container => {
-                container.style.display = 'none';
-            });
-        }, 500); // Match the transition duration
         
         // Hide painting lanes
         document.querySelector('.painting-lanes').classList.remove('visible');
@@ -305,10 +296,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         }[realmType];
                         
                         if (targetTimeline) {
-                            targetTimeline.parentElement.style.display = 'flex';
+                            const container = targetTimeline.parentElement;
+                            container.style.display = 'flex';
                             // Force reflow to ensure transition works
-                            targetTimeline.parentElement.offsetHeight;
-                            targetTimeline.parentElement.classList.add('visible');
+                            container.offsetHeight;
+                            container.classList.add('visible');
                         }
                         
                         if (ENABLE_PAINTING_LANES) {
@@ -494,7 +486,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const titleMap = {
                 'utopia': 'Утопия',
                 'city-of-sun': 'Градът на слънцето',
-                'social-contract': 'Обществения договор',
+                'social-contract': 'Общественият договор',
+                'left-hand': 'Лявата ръка на мрака',
                 'macbeth': 'Макбет',
                 'faust': 'Фауст',
                 'tobacco': 'Тютюн',

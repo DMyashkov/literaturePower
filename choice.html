@@ -283,158 +283,180 @@
         </div>
     </div>
 
+    <script>
+        // Load the JSON file
+        window.philosophicalWorks = null;
+        fetch('./philosophical_works.json')
+            .then(response => response.json())
+            .then(data => {
+                window.philosophicalWorks = data;
+            })
+            .catch(error => console.error('Error loading JSON:', error));
+    </script>
+
     <script type="module">
-        import philosophicalWorks from './philosophical_works.js';
-
         document.addEventListener('DOMContentLoaded', () => {
-            const bookDetails = document.querySelector('.book-details');
-            const dilemmaQuestion = document.getElementById('dilemmaQuestion');
-            const choiceAText = document.getElementById('choiceAText');
-            const choiceBText = document.getElementById('choiceBText');
-            const cornerLights = document.querySelectorAll('.corner-light');
-            
-            // Get book title from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const title = urlParams.get('title');
-            
-            if (title) {
-                // Get the work from all possible realms
-                const realms = [
-                    "Философски и утопични визии за властта",
-                    "Властта като лично падение",
-                    "Властта като социален и абсолютен контрол",
-                    "Божествена и съдбовна власт",
-                    "Властта на белите над черните"
-                ];
-                
-                let work = null;
-                let realm = null;
-                
-                for (const realmName of realms) {
-                    if (philosophicalWorks[realmName] && philosophicalWorks[realmName][title]) {
-                        work = philosophicalWorks[realmName][title];
-                        realm = realmName;
-                        break;
-                    }
-                }
-                
-                if (work) {
-                    dilemmaQuestion.textContent = work.moralDilemma.question;
-                    choiceAText.textContent = work.moralDilemma.choices.a;
-                    choiceBText.textContent = work.moralDilemma.choices.b;
-
-                    // Add theme class based on realm
-                    bookDetails.classList.add(`${realm.toLowerCase().replace(/\s+/g, '-')}-theme`);
-
-                    // Show corner lights
-                    cornerLights.forEach(light => {
-                        light.classList.add('visible');
-                    });
-
-                    // Add fade-out navigation function
-                    const navigateWithFade = (url) => {
-                        document.body.style.opacity = '0';
-                        document.body.style.transition = 'opacity 0.5s ease-out';
-                        setTimeout(() => {
-                            window.location.href = url;
-                        }, 500);
-                    };
-
-                    // Add click handlers for navigation buttons
-                    const backButton = document.getElementById('backButton');
-                    const homeButton = document.getElementById('homeButton');
-
-                    if (backButton) {
-                        backButton.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            navigateWithFade('index.html');
-                        });
-                    }
-
-                    if (homeButton) {
-                        homeButton.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            navigateWithFade('index.html');
-                        });
-                    }
-
-                    // Add escape key handler
-                    document.addEventListener('keydown', (e) => {
-                        if (e.key === 'Escape') {
-                            navigateWithFade('index.html');
+            // Wait for JSON to load
+            const waitForJSON = setInterval(() => {
+                if (window.philosophicalWorks) {
+                    clearInterval(waitForJSON);
+                    const philosophicalWorks = window.philosophicalWorks;
+                    const bookDetails = document.querySelector('.book-details');
+                    const dilemmaQuestion = document.getElementById('dilemmaQuestion');
+                    const choiceAText = document.getElementById('choiceAText');
+                    const choiceBText = document.getElementById('choiceBText');
+                    const cornerLights = document.querySelectorAll('.corner-light');
+                    
+                    // Get book title from URL parameters
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const title = urlParams.get('title');
+                    
+                    console.log('Loaded philosophical works:', philosophicalWorks);
+                    console.log('Title from URL:', title);
+                    
+                    if (title) {
+                        // Get the work from all possible realms
+                        const realms = [
+                            "Философски и утопични визии за властта",
+                            "Властта като лично падение",
+                            "Властта като социален и абсолютен контрол",
+                            "Божествена и съдбовна власт",
+                            "Властта на белите над черните"
+                        ];
+                        
+                        let work = null;
+                        let realm = null;
+                        
+                        for (const realmName of realms) {
+                            console.log('Checking realm:', realmName);
+                            console.log('Works in realm:', philosophicalWorks[realmName]);
+                            if (philosophicalWorks[realmName] && philosophicalWorks[realmName][title]) {
+                                work = philosophicalWorks[realmName][title];
+                                realm = realmName;
+                                console.log('Found work:', work);
+                                break;
+                            }
                         }
-                    });
+                        
+                        if (work) {
+                            dilemmaQuestion.textContent = work.moralDilemma.question;
+                            choiceAText.textContent = work.moralDilemma.choices.a;
+                            choiceBText.textContent = work.moralDilemma.choices.b;
 
-                    // Add click handlers for choices
-                    const choiceA = document.getElementById('choiceA');
-                    const choiceB = document.getElementById('choiceB');
-                    const lightEffectA = choiceA.querySelector('.light-effect');
-                    const lightEffectB = choiceB.querySelector('.light-effect');
+                            // Add theme class based on realm
+                            bookDetails.classList.add(`${realm.toLowerCase().replace(/\s+/g, '-')}-theme`);
 
-                    // Mouse movement effect for light aura
-                    document.addEventListener('mousemove', (e) => {
-                        const rectA = choiceA.getBoundingClientRect();
-                        const rectB = choiceB.getBoundingClientRect();
-                        
-                        const centerA = {
-                            x: rectA.left + rectA.width / 2,
-                            y: rectA.top + rectA.height / 2
-                        };
-                        
-                        const centerB = {
-                            x: rectB.left + rectB.width / 2,
-                            y: rectB.top + rectB.height / 2
-                        };
-                        
-                        const distanceA = Math.sqrt(
-                            Math.pow(e.clientX - centerA.x, 2) + 
-                            Math.pow(e.clientY - centerA.y, 2)
-                        );
-                        
-                        const distanceB = Math.sqrt(
-                            Math.pow(e.clientX - centerB.x, 2) + 
-                            Math.pow(e.clientY - centerB.y, 2)
-                        );
-                        
-                        const maxDistance = 1500; // Increased for larger area of effect
-                        const intensityA = Math.max(0, Math.pow(1 - distanceA / maxDistance, 1.1)); // Reduced power for more consistent intensity
-                        const intensityB = Math.max(0, Math.pow(1 - distanceB / maxDistance, 1.1));
-                        
-                        lightEffectA.style.opacity = intensityA;
-                        lightEffectB.style.opacity = intensityB;
-                    });
+                            // Show corner lights
+                            cornerLights.forEach(light => {
+                                light.classList.add('visible');
+                            });
 
-                    if (choiceA) {
-                        choiceA.addEventListener('click', () => {
-                            document.body.style.opacity = '0';
+                            // Add fade-out navigation function
+                            const navigateWithFade = (url) => {
+                                document.body.style.opacity = '0';
+                                document.body.style.transition = 'opacity 0.5s ease-out';
+                                setTimeout(() => {
+                                    window.location.href = url;
+                                }, 500);
+                            };
+
+                            // Add click handlers for navigation buttons
+                            const backButton = document.getElementById('backButton');
+                            const homeButton = document.getElementById('homeButton');
+
+                            if (backButton) {
+                                backButton.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    navigateWithFade('index.html');
+                                });
+                            }
+
+                            if (homeButton) {
+                                homeButton.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    navigateWithFade('index.html');
+                                });
+                            }
+
+                            // Add escape key handler
+                            document.addEventListener('keydown', (e) => {
+                                if (e.key === 'Escape') {
+                                    navigateWithFade('index.html');
+                                }
+                            });
+
+                            // Add click handlers for choices
+                            const choiceA = document.getElementById('choiceA');
+                            const choiceB = document.getElementById('choiceB');
+                            const lightEffectA = choiceA.querySelector('.light-effect');
+                            const lightEffectB = choiceB.querySelector('.light-effect');
+
+                            // Mouse movement effect for light aura
+                            document.addEventListener('mousemove', (e) => {
+                                const rectA = choiceA.getBoundingClientRect();
+                                const rectB = choiceB.getBoundingClientRect();
+                                
+                                const centerA = {
+                                    x: rectA.left + rectA.width / 2,
+                                    y: rectA.top + rectA.height / 2
+                                };
+                                
+                                const centerB = {
+                                    x: rectB.left + rectB.width / 2,
+                                    y: rectB.top + rectB.height / 2
+                                };
+                                
+                                const distanceA = Math.sqrt(
+                                    Math.pow(e.clientX - centerA.x, 2) + 
+                                    Math.pow(e.clientY - centerA.y, 2)
+                                );
+                                
+                                const distanceB = Math.sqrt(
+                                    Math.pow(e.clientX - centerB.x, 2) + 
+                                    Math.pow(e.clientY - centerB.y, 2)
+                                );
+                                
+                                const maxDistance = 1500; // Increased for larger area of effect
+                                const intensityA = Math.max(0, Math.pow(1 - distanceA / maxDistance, 1.1)); // Reduced power for more consistent intensity
+                                const intensityB = Math.max(0, Math.pow(1 - distanceB / maxDistance, 1.1));
+                                
+                                lightEffectA.style.opacity = intensityA;
+                                lightEffectB.style.opacity = intensityB;
+                            });
+
+                            if (choiceA) {
+                                choiceA.addEventListener('click', () => {
+                                    document.body.style.opacity = '0';
+                                    setTimeout(() => {
+                                        window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=a`;
+                                    }, 500);
+                                });
+                            }
+
+                            if (choiceB) {
+                                choiceB.addEventListener('click', () => {
+                                    document.body.style.opacity = '0';
+                                    setTimeout(() => {
+                                        window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=b`;
+                                    }, 500);
+                                });
+                            }
+
+                            // Show the content with a slight delay for the fade effect
                             setTimeout(() => {
-                                window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=a`;
-                            }, 500);
-                        });
+                                bookDetails.classList.add('visible');
+                                document.body.classList.add('visible');
+                            }, 100);
+                        } else {
+                            console.error('Book not found:', title);
+                            dilemmaQuestion.textContent = 'Книгата не е намерена';
+                        }
+                    } else {
+                        console.error('Book title not provided');
+                        dilemmaQuestion.textContent = 'Книгата не е намерена';
                     }
-
-                    if (choiceB) {
-                        choiceB.addEventListener('click', () => {
-                            document.body.style.opacity = '0';
-                            setTimeout(() => {
-                                window.location.href = `book-details.html?title=${encodeURIComponent(title)}&choice=b`;
-                            }, 500);
-                        });
-                    }
-
-                    // Show the content with a slight delay for the fade effect
-                    setTimeout(() => {
-                        bookDetails.classList.add('visible');
-                        document.body.classList.add('visible');
-                    }, 100);
-                } else {
-                    console.error('Book not found:', title);
-                    dilemmaQuestion.textContent = 'Книгата не е намерена';
                 }
-            } else {
-                console.error('Book title not provided');
-                dilemmaQuestion.textContent = 'Книгата не е намерена';
-            }
+            });
         });
     </script>
 </body>
